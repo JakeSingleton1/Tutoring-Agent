@@ -1,0 +1,76 @@
+{
+  "student_id": "STU004",
+  "questions": [
+    {
+      "id": "Q1",
+      "scenario_theme": "Retail Inventory Management",
+      "prompt_text": "An AI agent operating in a Retail Inventory Management system processes 19 tasks per minute. How many tasks will it complete in 4 hours, assuming zero downtime?",
+      "injected_values": {
+        "TASKS_PER_MINUTE": 19,
+        "TIME_WINDOW_HOURS": 4
+      },
+      "pre_computed_answer": {
+        "steps": "Step 1: Convert hours to minutes: 4 hours \u00d7 60 minutes/hour = 240 minutes. Step 2: Multiply by task rate: 19 tasks/minute \u00d7 240 minutes = 4,560 tasks.",
+        "final_result": "4,560 tasks"
+      }
+    },
+    {
+      "id": "Q2",
+      "scenario_theme": "Hospital Emergency Triage",
+      "prompt_text": "In a Hospital Emergency Triage agentic pipeline, Tool A costs $0.05 per call and achieves 60% accuracy. Tool B costs $0.33 per call and achieves 74% accuracy. If the pipeline makes 8784 calls, what is the cost-per-accurate-result for each tool, and which tool is more cost-efficient?",
+      "injected_values": {
+        "COST_A": 0.05,
+        "ACCURACY_A": 60,
+        "COST_B": 0.33,
+        "ACCURACY_B": 74,
+        "NUM_CALLS": 8784
+      },
+      "pre_computed_answer": {
+        "steps": "Tool A: accurate_results_A = 8784 \u00d7 (60 / 100) = 8784 \u00d7 0.60 = 5,270.4 accurate results. total_cost_A = 8784 \u00d7 $0.05 = $439.20. cost_per_accurate_A = $439.20 / 5,270.4 \u2248 $0.0833 per accurate result. Tool B: accurate_results_B = 8784 \u00d7 (74 / 100) = 8784 \u00d7 0.74 = 6,500.16 accurate results. total_cost_B = 8784 \u00d7 $0.33 = $2,898.72. cost_per_accurate_B = $2,898.72 / 6,500.16 \u2248 $0.4460 per accurate result. Comparison: $0.0833 < $0.4460, so Tool A is more cost-efficient.",
+        "final_result": "Tool A: \u2248 $0.0833 per accurate result; Tool B: \u2248 $0.4460 per accurate result. Tool A is more cost-efficient."
+      }
+    },
+    {
+      "id": "Q3",
+      "scenario_theme": "News Summarization Pipeline",
+      "prompt_text": "A News Summarization Pipeline workflow requires 5 agents to each complete a sub-task. Each agent takes 5.2 seconds. If run sequentially, what is the total latency? If run in parallel (ignoring overhead), what is the total latency? What is the time saved by parallelization?",
+      "injected_values": {
+        "NUM_AGENTS": 5,
+        "AGENT_LATENCY_SECONDS": 5.2
+      },
+      "pre_computed_answer": {
+        "steps": "Sequential latency = NUM_AGENTS \u00d7 AGENT_LATENCY_SECONDS = 5 \u00d7 5.2 = 26.0 seconds. Parallel latency = AGENT_LATENCY_SECONDS = 5.2 seconds (all agents run simultaneously). Time saved = sequential_latency \u2212 parallel_latency = 26.0 \u2212 5.2 = 20.8 seconds. Speedup factor = 26.0 / 5.2 = 5.0\u00d7.",
+        "final_result": "Sequential latency: 26.0 seconds; Parallel latency: 5.2 seconds; Time saved: 20.8 seconds (5\u00d7 speedup)"
+      }
+    },
+    {
+      "id": "Q4",
+      "scenario_theme": "Academic Research Assistant",
+      "prompt_text": "An Academic Research Assistant RAG agent has a knowledge base of 4486 documents. A similarity threshold of 0.78 (on a 0\u20131 scale) filters retrieved results. In a test run, 485 documents exceeded the threshold. What percentage of the knowledge base was retrieved? If each retrieved document costs $0.029 to process, what is the total retrieval cost?",
+      "injected_values": {
+        "TOTAL_DOCUMENTS": 4486,
+        "THRESHOLD": 0.78,
+        "RETRIEVED_DOCS": 485,
+        "COST_PER_DOC": 0.029
+      },
+      "pre_computed_answer": {
+        "steps": "Retrieval percentage = (RETRIEVED_DOCS / TOTAL_DOCUMENTS) \u00d7 100 = (485 / 4486) \u00d7 100 \u2248 10.81%. Total retrieval cost = RETRIEVED_DOCS \u00d7 COST_PER_DOC = 485 \u00d7 $0.029 = $14.065.",
+        "final_result": "Retrieval percentage: \u2248 10.81%; Total retrieval cost: $14.065"
+      }
+    },
+    {
+      "id": "Q5",
+      "scenario_theme": "Customer Support Automation",
+      "prompt_text": "A Customer Support Automation agentic pipeline has 8 sequential steps. Each step has an independent success rate of 97%. What is the probability (as a percentage) that the entire pipeline completes without error? If 496 independent runs are executed, how many successful end-to-end completions are expected?",
+      "injected_values": {
+        "NUM_STEPS": 8,
+        "SUCCESS_RATE": 97,
+        "NUM_RUNS": 496
+      },
+      "pre_computed_answer": {
+        "steps": "Step 1: Convert success rate to decimal: 97 / 100 = 0.97. Step 2: Pipeline success probability = 0.97^8. Compute: 0.97^2 = 0.9409; 0.97^4 = 0.9409^2 \u2248 0.88529281; 0.97^8 = 0.88529281^2 \u2248 0.78374336. Step 3: Pipeline success percentage = 0.78374336 \u00d7 100 \u2248 78.37%. Step 4: Expected successful runs = NUM_RUNS \u00d7 pipeline_success_probability = 496 \u00d7 0.78374336 \u2248 388.74 runs.",
+        "final_result": "Pipeline success probability: \u2248 78.37%; Expected successful completions: \u2248 388.74 runs (out of 496)"
+      }
+    }
+  ]
+}

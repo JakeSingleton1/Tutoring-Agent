@@ -1,0 +1,134 @@
+{
+  "assignment_metadata": {
+    "title": "Agentic Workflows: Master Assignment",
+    "course": "Agentics — Spring 2026",
+    "version": "1.0",
+    "description": "Base assignment template for programmatic variation. Each question contains a variable placeholder and scenario theme that a Variation Agent can swap while preserving the underlying logic.",
+    "variation_instructions": "Replace all values enclosed in [BRACKETS] with student-specific values. The 'master_key' formula must remain unchanged — only the numeric/named inputs change."
+  },
+  "questions": [
+    {
+      "id": "Q1",
+      "learning_objective": "Calculate agent throughput given a fixed time window and task completion rate.",
+      "scenario_theme": "[SCENARIO_THEME_1]",
+      "prompt": "An AI agent operating in a [SCENARIO_THEME_1] system processes [TASKS_PER_MINUTE] tasks per minute. How many tasks will it complete in [TIME_WINDOW_HOURS] hours, assuming zero downtime?",
+      "variable_placeholders": {
+        "SCENARIO_THEME_1": "e.g., 'Retail Inventory', 'Hospital Triage', 'Logistics Dispatch'",
+        "TASKS_PER_MINUTE": "integer > 0",
+        "TIME_WINDOW_HOURS": "integer > 0"
+      },
+      "master_key": {
+        "formula": "total_tasks = TASKS_PER_MINUTE * 60 * TIME_WINDOW_HOURS",
+        "units": "tasks",
+        "notes": "Multiply tasks/min by 60 to convert hours to minutes, then by the time window."
+      }
+    },
+    {
+      "id": "Q2",
+      "learning_objective": "Determine optimal tool selection based on cost-vs-accuracy tradeoff in a multi-agent pipeline.",
+      "scenario_theme": "[SCENARIO_THEME_2]",
+      "prompt": "In a [SCENARIO_THEME_2] agentic pipeline, Tool A costs $[COST_A] per call and achieves [ACCURACY_A]% accuracy. Tool B costs $[COST_B] per call and achieves [ACCURACY_B]% accuracy. If the pipeline makes [NUM_CALLS] calls, what is the cost-per-accurate-result for each tool, and which tool is more cost-efficient?",
+      "variable_placeholders": {
+        "SCENARIO_THEME_2": "e.g., 'Financial Fraud Detection', 'Medical Diagnosis', 'Legal Document Review'",
+        "COST_A": "float > 0",
+        "ACCURACY_A": "integer 1–100",
+        "COST_B": "float > 0",
+        "ACCURACY_B": "integer 1–100",
+        "NUM_CALLS": "integer > 0"
+      },
+      "master_key": {
+        "formula": {
+          "accurate_results_A": "NUM_CALLS * (ACCURACY_A / 100)",
+          "total_cost_A": "NUM_CALLS * COST_A",
+          "cost_per_accurate_A": "total_cost_A / accurate_results_A",
+          "accurate_results_B": "NUM_CALLS * (ACCURACY_B / 100)",
+          "total_cost_B": "NUM_CALLS * COST_B",
+          "cost_per_accurate_B": "total_cost_B / accurate_results_B",
+          "winner": "whichever tool has the lower cost_per_accurate result"
+        },
+        "units": "dollars per accurate result",
+        "notes": "Accuracy must be converted from percentage to decimal before multiplication."
+      }
+    },
+    {
+      "id": "Q3",
+      "learning_objective": "Calculate the latency impact of sequential vs. parallel agent execution.",
+      "scenario_theme": "[SCENARIO_THEME_3]",
+      "prompt": "A [SCENARIO_THEME_3] workflow requires [NUM_AGENTS] agents to each complete a sub-task. Each agent takes [AGENT_LATENCY_SECONDS] seconds. If run sequentially, what is the total latency? If run in parallel (ignoring overhead), what is the total latency? What is the time saved by parallelization?",
+      "variable_placeholders": {
+        "SCENARIO_THEME_3": "e.g., 'Space Exploration Data Processing', 'E-commerce Order Fulfillment', 'News Summarization'",
+        "NUM_AGENTS": "integer >= 2",
+        "AGENT_LATENCY_SECONDS": "float > 0"
+      },
+      "master_key": {
+        "formula": {
+          "sequential_latency": "NUM_AGENTS * AGENT_LATENCY_SECONDS",
+          "parallel_latency": "AGENT_LATENCY_SECONDS",
+          "time_saved": "sequential_latency - parallel_latency",
+          "speedup_factor": "sequential_latency / parallel_latency"
+        },
+        "units": "seconds",
+        "notes": "Parallel latency equals a single agent's latency because all agents run simultaneously. Speedup factor equals NUM_AGENTS."
+      }
+    },
+    {
+      "id": "Q4",
+      "learning_objective": "Evaluate memory retrieval efficiency using a vector similarity threshold in a RAG pipeline.",
+      "scenario_theme": "[SCENARIO_THEME_4]",
+      "prompt": "A [SCENARIO_THEME_4] RAG agent has a knowledge base of [TOTAL_DOCUMENTS] documents. A similarity threshold of [THRESHOLD] (on a 0–1 scale) filters retrieved results. In a test run, [RETRIEVED_DOCS] documents exceeded the threshold. What percentage of the knowledge base was retrieved? If each retrieved document costs $[COST_PER_DOC] to process, what is the total retrieval cost?",
+      "variable_placeholders": {
+        "SCENARIO_THEME_4": "e.g., 'Academic Research Assistant', 'Customer Support Bot', 'Legal Precedent Finder'",
+        "TOTAL_DOCUMENTS": "integer > 0",
+        "THRESHOLD": "float between 0.0 and 1.0",
+        "RETRIEVED_DOCS": "integer <= TOTAL_DOCUMENTS",
+        "COST_PER_DOC": "float > 0"
+      },
+      "master_key": {
+        "formula": {
+          "retrieval_percentage": "(RETRIEVED_DOCS / TOTAL_DOCUMENTS) * 100",
+          "total_retrieval_cost": "RETRIEVED_DOCS * COST_PER_DOC"
+        },
+        "units": {
+          "retrieval_percentage": "percent",
+          "total_retrieval_cost": "dollars"
+        },
+        "notes": "THRESHOLD is context for the scenario but does not appear in the arithmetic — it determines RETRIEVED_DOCS, which is given."
+      }
+    },
+    {
+      "id": "Q5",
+      "learning_objective": "Compute agent error propagation across a multi-step pipeline and determine overall pipeline reliability.",
+      "scenario_theme": "[SCENARIO_THEME_5]",
+      "prompt": "A [SCENARIO_THEME_5] agentic pipeline has [NUM_STEPS] sequential steps. Each step has an independent success rate of [SUCCESS_RATE]%. What is the probability (as a percentage) that the entire pipeline completes without error? If [NUM_RUNS] independent runs are executed, how many successful end-to-end completions are expected?",
+      "variable_placeholders": {
+        "SCENARIO_THEME_5": "e.g., 'Autonomous Vehicle Navigation', 'Supply Chain Optimization', 'Clinical Trial Matching'",
+        "NUM_STEPS": "integer >= 2",
+        "SUCCESS_RATE": "integer 1–100",
+        "NUM_RUNS": "integer > 0"
+      },
+      "master_key": {
+        "formula": {
+          "pipeline_success_probability": "(SUCCESS_RATE / 100) ^ NUM_STEPS",
+          "pipeline_success_percentage": "pipeline_success_probability * 100",
+          "expected_successful_runs": "NUM_RUNS * pipeline_success_probability"
+        },
+        "units": {
+          "pipeline_success_percentage": "percent",
+          "expected_successful_runs": "runs"
+        },
+        "notes": "Each step's success is independent, so probabilities multiply. Convert percentage to decimal before exponentiation."
+      }
+    }
+  ],
+  "variation_agent_instructions": {
+    "description": "Instructions for a downstream agent tasked with generating student-specific variants.",
+    "steps": [
+      "1. For each question, sample a SCENARIO_THEME from the provided examples or generate a domain-appropriate alternative.",
+      "2. Sample numeric variable values within the constraints defined in 'variable_placeholders'.",
+      "3. Substitute all [BRACKET] tokens in the 'prompt' field with the sampled values.",
+      "4. Use the 'master_key' formula to pre-compute the correct answer for the grading rubric.",
+      "5. Output one JSON object per student: { student_id, variant_questions[ { id, prompt_text, correct_answer } ] }.",
+      "6. Never modify the 'master_key' formulas — only the inputs change."
+    ]
+  }
+}
