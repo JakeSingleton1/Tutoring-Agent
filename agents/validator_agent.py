@@ -21,9 +21,11 @@ from pathlib import Path
 import anthropic
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from config import VALIDATOR_MODEL, MASTER_ASSIGNMENT_PATH
+from config import VALIDATOR_MODEL, MASTER_ASSIGNMENT_PATH, VARIANTS_DIR
 
 client = anthropic.Anthropic()
+
+_ACTIVE_MASTER_PATH = VARIANTS_DIR.parent / "active_master.json"
 
 
 def _has_unresolved_brackets(text: str) -> bool:
@@ -31,9 +33,11 @@ def _has_unresolved_brackets(text: str) -> bool:
 
 
 def _load_master_keys() -> dict:
-    with open(MASTER_ASSIGNMENT_PATH) as f:
+    # Prefer PDF-generated master if present (mirrors Pipeline logic)
+    path = _ACTIVE_MASTER_PATH if _ACTIVE_MASTER_PATH.exists() else MASTER_ASSIGNMENT_PATH
+    with open(path) as f:
         data = json.load(f)
-    return {q["id"]: q["master_key"] for q in data["questions"]}
+    return {q["id"]: q.get("master_key", {}) for q in data["questions"]}
 
 
 def _build_validation_prompt(question: dict, master_key: dict) -> str:
@@ -92,9 +96,18 @@ def validate_question(question: dict, master_key: dict) -> dict:
         messages=[{"role": "user", "content": prompt}],
     )
 
-    text = next(b.text for b in response.content if b.type == "text")
-    text = text.strip().strip("```json").strip("```").strip()
-    return json.loads(text)
+    text = next((b.text for b in response.content if b.type == "text"), "")
+    if not text:
+        raise ValueError(f"No text block in validator response for question {question.get('id')}")
+
+    text = text.strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid JSON from validator for question {question.get('id')}: {e}\n{text[:200]}")
 
 
 def validate_variant(variant: dict) -> dict:

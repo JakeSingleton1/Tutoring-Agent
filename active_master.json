@@ -1,0 +1,104 @@
+{
+  "assignment_metadata": {
+    "title": "Introduction to Computers and Programming Fundamentals",
+    "course": "Starting Out with Python - Introductory Computer Science",
+    "version": "1.0",
+    "description": "Tests understanding of binary number representation, computer hardware components, memory concepts, programming language classification, and the fetch-decode-execute cycle as covered in Chapter 1.",
+    "variation_instructions": "Replace all [BRACKET] tokens with student-specific values. Ensure binary values fit within the specified number of bits and that all numeric values remain within stated constraints."
+  },
+  "questions": [
+    {
+      "id": "Q1",
+      "learning_objective": "Understand how binary numbers represent decimal values by calculating position values and summing them.",
+      "scenario_theme": "[SCENARIO_THEME_1]",
+      "prompt": "In a [SCENARIO_THEME_1] context, a sensor stores a reading as an 8-bit binary number. The binary value stored is [BINARY_VALUE]. Convert this binary number to its decimal equivalent. What is the decimal value?",
+      "variable_placeholders": {
+        "SCENARIO_THEME_1": "e.g., 'Weather Station Monitoring', 'Industrial Temperature Tracking'",
+        "BINARY_VALUE": "An 8-bit binary string, e.g., '11001010', containing at least three 1s and at least two 0s"
+      },
+      "master_key": {
+        "formula": "result = sum of (bit_value * 2^position) for each bit, where position 0 is the rightmost bit. For example, 11001010 = 1*128 + 1*64 + 0*32 + 0*16 + 1*8 + 0*4 + 1*2 + 0*1 = 202",
+        "units": "decimal (integer)",
+        "notes": "Each bit position from right to left has values 1, 2, 4, 8, 16, 32, 64, 128. Sum the position values where the bit is 1."
+      }
+    },
+    {
+      "id": "Q2",
+      "learning_objective": "Understand the maximum value that can be stored in a given number of bytes using binary representation.",
+      "scenario_theme": "[SCENARIO_THEME_2]",
+      "prompt": "In a [SCENARIO_THEME_2] system, a data field uses exactly [NUM_BYTES] byte(s) to store an unsigned integer. What is the maximum decimal value that can be stored in this field?",
+      "variable_placeholders": {
+        "SCENARIO_THEME_2": "e.g., 'Retail Inventory Database', 'Student Grade Tracker'",
+        "NUM_BYTES": "integer between 1 and 4 inclusive"
+      },
+      "master_key": {
+        "formula": "result = 2^(NUM_BYTES * 8) - 1. For example, 1 byte: 2^8 - 1 = 255; 2 bytes: 2^16 - 1 = 65535; 3 bytes: 2^24 - 1 = 16777215; 4 bytes: 2^32 - 1 = 4294967295",
+        "units": "decimal (integer)",
+        "notes": "Each byte has 8 bits. The maximum unsigned value for N bits is 2^N - 1, since all bits are set to 1."
+      }
+    },
+    {
+      "id": "Q3",
+      "learning_objective": "Classify programming languages and translation tools by understanding the distinction between compilers, interpreters, assemblers, and language levels.",
+      "scenario_theme": "[SCENARIO_THEME_3]",
+      "prompt": "A [SCENARIO_THEME_3] team is choosing tools for a new project. Consider the following [NUM_ITEMS] items: [ITEM_LIST]. For each item, classify it as one of the following categories: 'high-level language', 'low-level language', 'machine language', or 'translation tool'. How many of the [NUM_ITEMS] items are classified as '[TARGET_CATEGORY]'?",
+      "variable_placeholders": {
+        "SCENARIO_THEME_3": "e.g., 'Software Startup', 'University Research Lab'",
+        "NUM_ITEMS": "integer between 5 and 8",
+        "ITEM_LIST": "A comma-separated list drawn from: Python, assembly language, machine language, Java, compiler, interpreter, assembler, COBOL, C++, binary code. Must include at least one from each category.",
+        "TARGET_CATEGORY": "One of: 'high-level language', 'low-level language', 'machine language', 'translation tool'"
+      },
+      "master_key": {
+        "formula": "Count items matching TARGET_CATEGORY. Classifications: Python, Java, COBOL, C++ = high-level language; assembly language = low-level language; machine language, binary code = machine language; compiler, interpreter, assembler = translation tool.",
+        "units": "count (integer)",
+        "notes": "Based on Chapter 1 definitions: assembly language is low-level; Python/Java/COBOL/C++ are high-level; compiler/interpreter/assembler are translation tools; machine language/binary code is machine language."
+      }
+    },
+    {
+      "id": "Q4",
+      "learning_objective": "Understand the roles of the five major computer hardware components by matching functions to components.",
+      "scenario_theme": "[SCENARIO_THEME_4]",
+      "prompt": "In a [SCENARIO_THEME_4] scenario, a technician documents [NUM_FUNCTIONS] hardware functions: [FUNCTION_LIST]. Each function corresponds to exactly one of the five major computer components: CPU, main memory (RAM), secondary storage, input device, or output device. How many of these [NUM_FUNCTIONS] functions correspond to '[TARGET_COMPONENT]'?",
+      "variable_placeholders": {
+        "SCENARIO_THEME_4": "e.g., 'Hospital IT Department', 'School Computer Lab Setup'",
+        "NUM_FUNCTIONS": "integer between 5 and 7",
+        "FUNCTION_LIST": "Comma-separated list of functions, e.g., 'executes program instructions, stores data permanently even without power, temporarily holds running programs, collects data from users, displays results on screen, formats and presents data, reads keyboard input'",
+        "TARGET_COMPONENT": "One of: 'CPU', 'main memory (RAM)', 'secondary storage', 'input device', 'output device'"
+      },
+      "master_key": {
+        "formula": "Count functions matching TARGET_COMPONENT. Mappings: 'executes program instructions' = CPU; 'stores data permanently even without power' = secondary storage; 'temporarily holds running programs' = main memory (RAM); 'collects data from users' / 'reads keyboard input' = input device; 'displays results on screen' / 'formats and presents data' = output device.",
+        "units": "count (integer)",
+        "notes": "Based on Chapter 1 Section 1.2: CPU runs programs, RAM is temporary work area, secondary storage is persistent, input devices collect data, output devices present data."
+      }
+    },
+    {
+      "id": "Q5",
+      "learning_objective": "Understand the fetch-decode-execute cycle and how many complete cycles are needed for a program with a given number of instructions.",
+      "scenario_theme": "[SCENARIO_THEME_5]",
+      "prompt": "In a [SCENARIO_THEME_5] application, a simple program contains [NUM_INSTRUCTIONS] machine language instructions. The CPU processes each instruction through the fetch-decode-execute cycle. Each cycle consists of exactly [NUM_STEPS] steps (fetch, decode, execute). How many total individual steps does the CPU perform to execute the entire program? Additionally, name the three steps of the cycle in order.",
+      "variable_placeholders": {
+        "SCENARIO_THEME_5": "e.g., 'Automated Warehouse Robot', 'Smart Thermostat Controller'",
+        "NUM_INSTRUCTIONS": "integer between 10 and 500",
+        "NUM_STEPS": "always 3 (fetch, decode, execute)"
+      },
+      "master_key": {
+        "formula": "total_steps = NUM_INSTRUCTIONS * NUM_STEPS. The three steps in order are: 1. Fetch, 2. Decode, 3. Execute. For example, if NUM_INSTRUCTIONS = 50 and NUM_STEPS = 3, then total_steps = 150.",
+        "units": "steps (integer), plus ordered list: Fetch, Decode, Execute",
+        "notes": "Each instruction requires one complete cycle of 3 steps. The cycle repeats for every instruction in the program, as described in Section 1.4."
+      }
+    }
+  ],
+  "variation_agent_instructions": {
+    "description": "Instructions for downstream variant generation to produce unique student assignments.",
+    "steps": [
+      "1. Sample a SCENARIO_THEME from the provided examples or generate a domain-appropriate one that does not alter the underlying logic.",
+      "2. Sample numeric values within the constraints specified in variable_placeholders for each question.",
+      "3. For Q1, generate a valid 8-bit binary string with at least three 1s and two 0s.",
+      "4. For Q3 and Q4, construct valid item/function lists ensuring at least one item maps to each relevant category, then pick a TARGET_CATEGORY or TARGET_COMPONENT.",
+      "5. Substitute all [BRACKET] tokens in the prompt with the sampled values.",
+      "6. Use the master_key formula to pre-compute the correct answer for the specific values chosen.",
+      "7. Output one JSON object per student containing the personalized prompt and expected answer.",
+      "8. Never modify master_key formulas \u2014 only the input values change."
+    ]
+  }
+}

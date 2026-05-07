@@ -14,7 +14,7 @@ VARIANTS_DIR.mkdir(exist_ok=True)
 ARCHITECT_MODEL = "claude-opus-4-6"
 VARIATION_MODEL = "claude-opus-4-6"
 # Validator only checks math → cheaper model is fine
-VALIDATOR_MODEL = "claude-haiku-4-5"
+VALIDATOR_MODEL = "claude-haiku-4-5-20251001"
 # Student-facing → Opus for best tutoring quality
 TUTOR_MODEL = "claude-opus-4-6"
 EVALUATOR_MODEL = "claude-opus-4-6"

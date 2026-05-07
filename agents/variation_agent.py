@@ -153,7 +153,11 @@ def generate_variant(student_id: str, base_assignment: dict, theme_pool: list[st
     base_questions = base_assignment["questions"]
 
     # Sample values for each question deterministically before calling Claude
-    sampled = {q["id"]: VALUE_SAMPLERS[q["id"]]() for q in base_questions}
+    # Fall back to Q1 sampler for any question IDs not in the static map
+    sampled = {
+        q["id"]: (VALUE_SAMPLERS.get(q["id"]) or VALUE_SAMPLERS["Q1"])()
+        for q in base_questions
+    }
 
     # Build a prompt that includes the pre-sampled values
     prompt = _build_variation_prompt(base_questions, student_id, theme_pool)
@@ -177,11 +181,19 @@ def generate_variant(student_id: str, base_assignment: dict, theme_pool: list[st
     )
 
     # Extract the text block (thinking blocks are separate)
-    text = next(b.text for b in response.content if b.type == "text")
+    text = next((b.text for b in response.content if b.type == "text"), "")
+    if not text:
+        raise ValueError(f"No text block in response for {student_id}")
 
-    # Parse JSON — strip any accidental fences
-    text = text.strip().strip("```json").strip("```").strip()
-    variant = json.loads(text)
+    # Strip any accidental markdown fences
+    text = text.strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+
+    try:
+        variant = json.loads(text)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid JSON from variation agent for {student_id}: {e}\n{text[:200]}")
 
     # Attach the sampled values to each question for the validator
     for q in variant["questions"]:

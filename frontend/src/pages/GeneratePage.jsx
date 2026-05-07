@@ -125,7 +125,12 @@ export default function GeneratePage() {
     try {
       const res = await fetch('/api/pdf/upload', { method: 'POST', body: form })
       if (!res.ok) {
-        const detail = (await res.json()).detail || 'Upload failed'
+        // Safely read the error body — it may be JSON or plain text
+        let detail = `Upload failed (${res.status})`
+        try {
+          const text = await res.text()
+          try { detail = JSON.parse(text).detail || text } catch { detail = text }
+        } catch { /* leave default */ }
         throw new Error(detail)
       }
       const m = await res.json()

@@ -2,28 +2,12 @@
 PDF Agent
 ─────────
 Reads a PDF file and generates a master_assignment.json from its content.
-Uses Claude's native PDF document support (base64) so no extra parsing library
-is needed — Claude reads the PDF directly.
+Extracts text with pypdf and sends it as plain text — avoids Anthropic's
+32 MB base64 request limit and works on any text-based PDF.
 
-Output: a master assignment dict matching the pipeline schema:
-  {
-    "assignment_metadata": { ... },
-    "questions": [
-      {
-        "id": "Q1",
-        "learning_objective": "...",
-        "scenario_theme": "[SCENARIO_THEME_1]",
-        "prompt": "...[PLACEHOLDER]...",
-        "variable_placeholders": { ... },
-        "master_key": { "formula": "...", "units": "...", "notes": "..." }
-      },
-      ... (up to 5 questions)
-    ],
-    "variation_agent_instructions": { ... }
-  }
+Output: a master assignment dict matching the pipeline schema.
 """
 
-import base64
 import json
 from pathlib import Path
 
@@ -35,12 +19,14 @@ from config import VARIATION_MODEL
 
 client = anthropic.Anthropic()
 
+MAX_CHARS = 80_000  # ~60-80 pages; enough for a chapter, safe within context window
+
 # ── Schema reference shown to Claude ──────────────────────────────────────────
 
 _SCHEMA_EXAMPLE = """
 {
   "assignment_metadata": {
-    "title": "Assignment title derived from PDF topic",
+    "title": "Assignment title derived from the material",
     "course": "Course name if identifiable, else 'Unknown Course'",
     "version": "1.0",
     "description": "What this assignment tests",
@@ -80,16 +66,60 @@ _SCHEMA_EXAMPLE = """
 
 _SYSTEM_PROMPT = (
     "You are an expert educational content designer. "
-    "You read source material and produce rigorous, well-structured homework assignments. "
+    "You read source material and produce rigorous, well-structured study assignments. "
     "Always output valid JSON exactly as instructed. Never include markdown code fences."
 )
+
+
+# ── Text extraction ────────────────────────────────────────────────────────────
+
+def _extract_text(pdf_path: str) -> tuple[str, list[dict]]:
+    """Extract plain text from a PDF using pypdf.
+
+    Returns:
+        (full_text, page_index) where full_text has [Page N] markers and
+        page_index is a list of {"page": N, "text": "..."} dicts for tool lookup.
+    """
+    from pypdf import PdfReader
+
+    reader = PdfReader(pdf_path)
+    if reader.is_encrypted:
+        raise ValueError("This PDF is encrypted/password-protected. Please use an unlocked PDF.")
+
+    page_index = []
+    pages_text = []
+    total = 0
+    for i, page in enumerate(reader.pages):
+        text = page.extract_text() or ""
+        page_index.append({"page": i + 1, "text": text})
+        pages_text.append(f"[Page {i + 1}]\n{text}")
+        total += len(text)
+        if total >= MAX_CHARS:
+            break
+
+    full_text = "\n\n".join(pages_text).strip()
+
+    if not full_text:
+        raise ValueError(
+            "No text could be extracted from this PDF. "
+            "It may be a scanned image — try a text-based PDF or copy-paste the content."
+        )
+
+    if len(full_text) > MAX_CHARS:
+        full_text = (
+            full_text[:MAX_CHARS]
+            + f"\n\n[Content truncated at {MAX_CHARS:,} characters. "
+            "For best results, upload a single chapter rather than a full textbook.]"
+        )
+
+    return full_text, page_index
 
 
 # ── Main function ──────────────────────────────────────────────────────────────
 
 def generate_master_assignment(pdf_path: str, num_questions: int = 5) -> dict:
     """
-    Read a PDF and generate a master assignment JSON from its content.
+    Extract text from a PDF and ask Claude to generate a master assignment.
 
     Args:
         pdf_path: Absolute path to the PDF file.
@@ -98,61 +128,53 @@ def generate_master_assignment(pdf_path: str, num_questions: int = 5) -> dict:
     Returns:
         Parsed master assignment dict ready for the pipeline.
     """
-    pdf_bytes = Path(pdf_path).read_bytes()
-    pdf_b64 = base64.standard_b64encode(pdf_bytes).decode("utf-8")
+    print(f"  [PDF Agent] Extracting text from PDF…")
+    content_text = _extract_text(pdf_path)
+    char_count = len(content_text)
+    print(f"  [PDF Agent] Extracted {char_count:,} characters — sending to Claude…")
 
-    prompt = f"""You are given a PDF of course material. Your job is to design a homework assignment
-that tests students' understanding of the key concepts in that material.
+    prompt = f"""Below is the text content of a study document. Your job is to design a study
+assignment that tests students' understanding of the key concepts in this material.
+
+## Source Material
+{content_text}
 
 ## Requirements
 1. Generate exactly {num_questions} questions (Q1 through Q{num_questions}).
 2. Each question must:
-   - Test a distinct, important concept from the PDF.
+   - Test a distinct, important concept from the material above.
    - Use [BRACKET] placeholders for ALL variable quantities (numbers, names, thresholds).
    - Have a clear, computable master_key with an explicit formula or procedure.
-   - Be answerable with a specific numeric result OR a clearly defined categorical/boolean answer.
-3. The questions must be varied enough that students cannot answer one by copying another.
-4. SCENARIO_THEME placeholders let downstream agents swap in domain-specific contexts while
-   keeping the underlying logic identical.
+   - Be answerable with a specific numeric result OR a clearly defined categorical answer.
+3. Questions must be varied — a student cannot answer one by copying another.
+4. SCENARIO_THEME placeholders let downstream agents swap in domain-specific contexts
+   while keeping the underlying logic identical.
 
 ## Output Format
 Output ONLY the JSON below — no explanation, no markdown fences.
 
-{_SCHEMA_EXAMPLE}
+{_SCHEMA_EXAMPLE}"""
 
-Now generate the assignment from the PDF provided."""
-
-    print(f"  [PDF Agent] Sending PDF to Claude for analysis...")
     response = client.messages.create(
         model=VARIATION_MODEL,
         max_tokens=8192,
         system=_SYSTEM_PROMPT,
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "document",
-                        "source": {
-                            "type": "base64",
-                            "media_type": "application/pdf",
-                            "data": pdf_b64,
-                        },
-                    },
-                    {
-                        "type": "text",
-                        "text": prompt,
-                    },
-                ],
-            }
-        ],
+        messages=[{"role": "user", "content": prompt}],
     )
 
-    text = next(b.text for b in response.content if b.type == "text")
-    text = text.strip().strip("```json").strip("```").strip()
-    master = json.loads(text)
+    text = next((b.text for b in response.content if b.type == "text"), "")
+    if not text:
+        raise ValueError("No text block in PDF agent response")
 
-    # Ensure Q IDs are consistent
+    text = text.strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+
+    try:
+        master = json.loads(text)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid JSON from PDF agent: {e}\n{text[:200]}")
+
     for i, q in enumerate(master.get("questions", []), start=1):
         q["id"] = f"Q{i}"
 

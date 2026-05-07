@@ -52,6 +52,20 @@ export default function TutorPage() {
         body: JSON.stringify({ message: text, history }),
       })
 
+      if (!res.ok) {
+        let detail = `Tutor error (${res.status})`
+        try {
+          const t = await res.text()
+          try { detail = JSON.parse(t).detail || t } catch { detail = t }
+        } catch { /* leave default */ }
+        setMessages(prev => {
+          const updated = [...prev]
+          updated[updated.length - 1] = { role: 'assistant', content: `⚠ ${detail}` }
+          return updated
+        })
+        return
+      }
+
       const reader = res.body.getReader()
       const decoder = new TextDecoder()
       let buffer = ''
@@ -69,15 +83,25 @@ export default function TutorPage() {
           const payload = line.slice(6)
           if (payload === '[DONE]') break
           try {
-            const { text: token } = JSON.parse(payload)
-            setMessages(prev => {
-              const updated = [...prev]
-              updated[updated.length - 1] = {
-                ...updated[updated.length - 1],
-                content: updated[updated.length - 1].content + token,
-              }
-              return updated
-            })
+            const parsed = JSON.parse(payload)
+            if (parsed.error) {
+              setMessages(prev => {
+                const updated = [...prev]
+                updated[updated.length - 1] = { role: 'assistant', content: `⚠ ${parsed.error}` }
+                return updated
+              })
+              break
+            }
+            if (parsed.text) {
+              setMessages(prev => {
+                const updated = [...prev]
+                updated[updated.length - 1] = {
+                  ...updated[updated.length - 1],
+                  content: updated[updated.length - 1].content + parsed.text,
+                }
+                return updated
+              })
+            }
           } catch { /* skip malformed lines */ }
         }
       }

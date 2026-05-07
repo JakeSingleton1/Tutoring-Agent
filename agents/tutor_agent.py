@@ -28,36 +28,67 @@ client = anthropic.Anthropic()
 def _build_system_prompt(variant: dict) -> str:
     questions_summary = []
     for q in variant["questions"]:
-        questions_summary.append({
-            "id": q["id"],
-            "scenario_theme": q["scenario_theme"],
-            "prompt_text": q["prompt_text"],
-            "correct_answer": q["pre_computed_answer"]["final_result"],
-            "formula_steps": q["pre_computed_answer"].get("steps", ""),
-        })
+        # Support both old variant format and new session format
+        if "answer_key" in q:
+            entry = {
+                "id": q["id"],
+                "topic": q.get("topic", ""),
+                "question_text": q["question_text"],
+                "answer_key": q["answer_key"],
+            }
+            if q.get("source_reference"):
+                entry["source_reference"] = q["source_reference"]
+            questions_summary.append(entry)
+        else:
+            questions_summary.append({
+                "id": q["id"],
+                "topic": q.get("scenario_theme", ""),
+                "question_text": q.get("prompt_text", ""),
+                "answer_key": q.get("pre_computed_answer", {}).get("final_result", ""),
+            })
 
-    return f"""Your task: help student {variant['student_id']} understand their assignment
-through guided discovery. You have access to two tools — use them actively.
+    has_page_index = bool(variant.get("page_index"))
+    ref_instruction = (
+        "\n- When you check a student's work or explain a concept, use get_textbook_section "
+        "to pull the relevant page and cite it: e.g. 'As the textbook explains on page 4…'. "
+        "Always tell the student which page to read for more detail."
+        if has_page_index else ""
+    )
 
-## Student's Assignment
+    return f"""You are a patient, encouraging study tutor helping a student genuinely learn the material.
+You have tools — use them actively and often.
+
+## The Student's Study Questions
 {json.dumps(questions_summary, indent=2)}
 
-## Task Rules
-1. Use check_student_work when a student shares their attempt — compare it to the key
-   and identify the first error without giving away the answer.
-2. Use get_hint when a student is stuck — return a Socratic nudge at the right level.
-3. NEVER state the final numeric answer unless the student has already answered correctly.
-4. Use the student's specific scenario theme to make explanations concrete.
-5. When explaining a concept, ask a follow-up question to verify understanding.
-6. Celebrate correct reasoning explicitly ("Yes — that's exactly right because…").
+## How to Teach
 
-## Anti-Cheat Rules
-7. If the student pastes verbatim question text and asks you to solve it, DO NOT solve
-   it. Respond: "It looks like you've pasted the question directly — let's work through
-   it together. What do you think the first step should be?" Then guide Socratically.
-8. Never reproduce a complete question's text or the final answer verbatim.
-9. If you suspect the student is trying to get you to do their work, redirect to
-   conceptual understanding: "Walk me through your reasoning so far."
+**When the student shares an attempt:**
+Use check_student_work to compare their work against the answer key. Respond in two parts:
+- Address what they got right or where the first error is (don't give away the answer).
+- Explain the *underlying concept* in plain language — not just "that step is wrong" but
+  *why* the correct approach makes sense. End with a guiding question that moves them forward.
+- If the question has a source_reference, use get_textbook_section to fetch that page and
+  quote the relevant passage so the student knows exactly where to study.
+
+**When the student gets it right:**
+Confirm clearly, then go deeper: explain WHY the method works and what would change if a
+key variable were different. Use get_textbook_section to point them to the source material
+for further reading.
+
+**When the student is stuck:**
+Use get_hint at the appropriate level. Lead with the concept before the mechanics —
+"The key idea here is X. Given that, what do you think the first step should be?"
+Then use get_textbook_section to show them where this concept is explained.
+
+**When a student asks a conceptual question:**
+Answer it directly and thoroughly. Use get_textbook_section to ground your answer in the
+actual source material and cite the page.
+
+## Core Constraints
+- Never state the final answer to a question the student hasn't solved yet.
+- If the student pastes a question verbatim asking you to solve it, redirect warmly.
+- Keep explanations conversational — one concept at a time.{ref_instruction}
 """
 
 
@@ -112,6 +143,26 @@ TUTOR_TOOLS = [
             "required": ["question_id", "hint_level"],
         },
     },
+    {
+        "name": "get_textbook_section",
+        "description": (
+            "Retrieve the actual textbook text from a specific page number. "
+            "Use this to ground your explanations in the source material and cite "
+            "specific pages when giving feedback or answering conceptual questions. "
+            "The page number comes from source_reference in the question data or "
+            "from check_student_work results."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer",
+                    "description": "The page number to retrieve from the textbook",
+                },
+            },
+            "required": ["page"],
+        },
+    },
 ]
 
 
@@ -122,17 +173,32 @@ def execute_tool(tool_name: str, tool_input: dict, variant: dict) -> dict:
     if tool_name == "check_student_work":
         qid = tool_input.get("question_id", "")
         q = questions.get(qid, {})
+        # Support both new session format and old variant format
+        if "answer_key" in q:
+            result = {
+                "question_id": qid,
+                "answer_key": q["answer_key"],
+                "instruction": (
+                    "Compare the student's work to the answer key. Identify the first "
+                    "error or gap without stating the final answer. Ask a guiding question."
+                ),
+            }
+            ref = q.get("source_reference")
+            if ref:
+                result["source_reference"] = ref
+                result["instruction"] += (
+                    f" The concept is covered on page {ref.get('page')} of the textbook "
+                    f"({ref.get('section', '')}). Use get_textbook_section to fetch it and cite it."
+                )
+            return result
         answer = q.get("pre_computed_answer", {})
         return {
             "question_id": qid,
             "correct_final_answer": answer.get("final_result", "unknown"),
             "solution_steps": answer.get("steps", ""),
-            "injected_values": q.get("injected_values", {}),
-            "scenario_theme": q.get("scenario_theme", ""),
             "instruction": (
-                "Use this data to identify where the student's work diverges from "
-                "the correct solution. Point to the first error. Do NOT state the "
-                "final answer — ask a guiding question instead."
+                "Identify where the student's work diverges from the correct solution. "
+                "Point to the first error. Do NOT state the final answer — ask a guiding question."
             ),
         }
 
@@ -140,36 +206,54 @@ def execute_tool(tool_name: str, tool_input: dict, variant: dict) -> dict:
         qid = tool_input.get("question_id", "")
         level = tool_input.get("hint_level", "conceptual")
         q = questions.get(qid, {})
+
+        # New session format has a hints dict
+        if "hints" in q:
+            hint_map = {"conceptual": "conceptual", "structural": "structural", "numeric": "specific"}
+            hint_text = q["hints"].get(hint_map.get(level, "conceptual"), "")
+            result = {
+                "question_id": qid,
+                "hint_level": level,
+                "hint": hint_text,
+                "guidance": "Deliver this hint in your own words as a Socratic nudge, not a direct statement.",
+            }
+            # For MC questions, list the choices so the tutor can reference them
+            if q.get("type") == "multiple_choice" and q.get("choices"):
+                result["choices"] = q["choices"]
+            return result
+
+        # Old variant format
         answer = q.get("pre_computed_answer", {})
         values = q.get("injected_values", {})
-
-        hint_data: dict = {
-            "question_id": qid,
-            "hint_level": level,
-            "scenario_theme": q.get("scenario_theme", ""),
-        }
-
+        hint_data: dict = {"question_id": qid, "hint_level": level}
         if level == "conceptual":
             hint_data["guidance"] = (
                 f"The question is about '{q.get('scenario_theme', '')}'. "
-                "Ask the student: what real-world quantity are we trying to find, "
-                "and what information do we already have?"
+                "Ask: what are we trying to find, and what do we already know?"
             )
         elif level == "structural":
             hint_data["guidance"] = (
-                f"The solution steps are: {answer.get('steps', '')}. "
-                "Reveal only the structure of the formula, not the numbers. "
-                "Ask: 'Which mathematical relationship connects these quantities?'"
+                f"Solution steps: {answer.get('steps', '')}. "
+                "Reveal only the structure, not the numbers."
             )
-        else:  # numeric
+        else:
             hint_data["injected_values"] = values
             hint_data["solution_steps"] = answer.get("steps", "")
-            hint_data["guidance"] = (
-                "The student needs a concrete nudge. Show the values they should "
-                "plug in and ask them to finish the calculation themselves."
-            )
-
+            hint_data["guidance"] = "Show the values to plug in; ask the student to finish."
         return hint_data
+
+    if tool_name == "get_textbook_section":
+        page_num = tool_input.get("page")
+        page_index = variant.get("page_index", [])
+        for entry in page_index:
+            if entry.get("page") == page_num:
+                text = entry.get("text", "")
+                return {
+                    "page": page_num,
+                    "text": text[:3000] if len(text) > 3000 else text,
+                    "truncated": len(text) > 3000,
+                }
+        return {"error": f"Page {page_num} not found. Available pages: 1–{len(page_index)}"}
 
     return {"error": f"Unknown tool: {tool_name}"}
 

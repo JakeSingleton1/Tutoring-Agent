@@ -1,0 +1,229 @@
+{
+  "id": "c177a647",
+  "title": "Python Textbook Pdf",
+  "source": "Python Textbook PDF.pdf",
+  "created_at": "2026-05-07T01:20:11.467906",
+  "questions": [
+    {
+      "id": "Q1",
+      "topic": "Binary number conversion",
+      "question_text": "In the binary numbering system, each bit position has a value that is a power of 2. Starting from the rightmost bit and moving left, the position values are 1, 2, 4, 8, 16, 32, 64, and 128. What is the decimal value of the binary number 10110010?",
+      "answer_key": "The decimal value is 178. To calculate this, identify which bit positions contain a 1: the positions with values 128, 32, 16, and 2. Adding these together: 128 + 32 + 16 + 2 = 178. Bits in the 64, 8, 4, and 1 positions are 0 and contribute nothing to the total.",
+      "hints": {
+        "conceptual": "Each binary digit (bit) represents a power of 2 based on its position, and you only sum the positions where the bit is 1.",
+        "structural": "Write out the position values from left to right: 128, 64, 32, 16, 8, 4, 2, 1. Then match each bit in 10110010 to its corresponding position value.",
+        "specific": "The 1s are in positions 128, 32, 16, and 2. Add those four numbers together."
+      }
+    },
+    {
+      "id": "Q2",
+      "topic": "Fetch-decode-execute cycle",
+      "question_text": "When a CPU executes the instructions in a program, it engages in a repetitive three-step process. Name this process, describe each of its three steps in order, and explain why it must repeat for every instruction in the program.",
+      "answer_key": "The process is called the fetch-decode-execute cycle. Step 1 (Fetch): The CPU reads the next instruction from main memory. Step 2 (Decode): The CPU analyzes the binary instruction to determine which operation it should perform. Step 3 (Execute): The CPU carries out the operation specified by the instruction. This cycle must repeat for every instruction because each machine language instruction performs only one basic operation, so a meaningful task requires the CPU to process many instructions sequentially.",
+      "hints": {
+        "conceptual": "Think about the logical steps a CPU must take before it can carry out any single instruction \u2014 it must first obtain the instruction, then understand it, then act on it.",
+        "structural": "The three steps follow a read-interpret-perform pattern, and they happen in a fixed order for each instruction.",
+        "specific": "The first step involves reading from main memory, the second step involves determining the operation, and the third step involves performing that operation."
+      }
+    },
+    {
+      "id": "Q3",
+      "topic": "Compiler versus interpreter",
+      "question_text": "Explain the key difference between a compiler and an interpreter when translating a high-level language program into machine language. Which of these two does Python use, and how does its translation process differ from the other approach?",
+      "answer_key": "A compiler translates an entire high-level language program into a separate, complete machine language program before any execution occurs. The resulting machine language program can then be executed independently at any time without the compiler. An interpreter, by contrast, translates and executes a program one instruction at a time \u2014 it reads each high-level instruction, converts it to machine language, and immediately executes it before moving to the next instruction. Python uses an interpreter. Unlike compilation, interpretation does not typically produce a separate standalone machine language program.",
+      "hints": {
+        "conceptual": "Consider whether the translation happens all at once before execution, or incrementally during execution.",
+        "structural": "One approach produces a separate machine language file that can be run later; the other combines translation and execution in a single ongoing process.",
+        "specific": "Python's interpreter reads one statement, translates it to machine language, executes it immediately, and then repeats for the next statement."
+      }
+    },
+    {
+      "id": "Q4",
+      "topic": "Main memory versus secondary storage",
+      "question_text": "A student says, 'I don't need a hard drive because my computer already has RAM to store everything.' Explain why this statement is incorrect by describing the key differences between main memory (RAM) and secondary storage in terms of volatility, purpose, and when each is used during program execution.",
+      "answer_key": "The statement is incorrect because RAM is volatile memory, meaning its contents are erased when the computer is turned off. Secondary storage (such as a hard drive or solid-state drive) is non-volatile and retains data even without power. RAM serves as the computer's temporary work area where programs and their data are held while actively running. Secondary storage is used for long-term preservation of programs, documents, and other data. During program execution, a program stored on secondary storage must first be copied into RAM before the CPU can execute it. Without secondary storage, all programs and data would be permanently lost every time the computer is shut down.",
+      "hints": {
+        "conceptual": "Think about what happens to data in each type of memory when the computer loses power.",
+        "structural": "RAM is for temporary, active use; secondary storage is for long-term persistence. Programs must move from one to the other before execution.",
+        "specific": "RAM is volatile (erased when power is off), while a hard drive or SSD is non-volatile (data persists without power)."
+      }
+    },
+    {
+      "id": "Q5",
+      "topic": "ASCII and Unicode character encoding",
+      "question_text": "When you type the uppercase letter 'A' on your keyboard, the computer does not store the letter itself in memory. Explain what actually gets stored, name the encoding scheme that defines this mapping, and describe why a more extensive encoding scheme called Unicode was later developed.",
+      "answer_key": "When you type an uppercase 'A', the computer stores the numeric code 65 in memory as a binary number (01000001). The encoding scheme that defines this mapping is ASCII (American Standard Code for Information Interchange), which assigns numeric codes to 128 characters including English letters, digits, and punctuation. Unicode was developed because ASCII is limited to only 128 characters and can represent only English characters. Unicode is a much more extensive encoding scheme that is compatible with ASCII but can also represent characters from many of the world's languages, making it suitable for international use.",
+      "hints": {
+        "conceptual": "All data in a computer, including text characters, must ultimately be stored as binary numbers. A coding scheme maps each character to a specific number.",
+        "structural": "ASCII maps 128 characters to numeric codes. Its limitation is the small number of characters it can represent.",
+        "specific": "The ASCII code for uppercase A is 65. Unicode extends beyond 128 characters to support many world languages."
+      }
+    },
+    {
+      "id": "Q6",
+      "topic": "Python interactive versus script mode",
+      "question_text": "The Python interpreter can be used in two different modes. Describe each mode, explain when a programmer would choose to use each one, and state what file extension is used when saving a Python program for script mode execution.",
+      "answer_key": "The two modes are interactive mode and script mode. In interactive mode, the interpreter displays a >>> prompt and waits for the user to type individual Python statements at the keyboard; each statement is executed immediately and its result is displayed. This mode is useful for testing small pieces of code, experimenting with new language features, and getting immediate feedback. In script mode, the interpreter reads and executes all the statements contained in a saved file (a Python program or script). This mode is used when a programmer wants to save a complete program for repeated execution. Python program files are saved with the .py file extension.",
+      "hints": {
+        "conceptual": "One mode is for typing and immediately executing individual statements; the other is for running a saved collection of statements from a file.",
+        "structural": "Interactive mode uses a >>> prompt for one-at-a-time execution; script mode reads from a file and executes all statements in sequence.",
+        "specific": "Python scripts are saved with a .py extension and run from the command line using a command like 'python test.py'."
+      }
+    },
+    {
+      "id": "Q7",
+      "topic": "Five major computer components",
+      "question_text": "A typical computer system consists of five major categories of components working together. List all five categories and briefly describe the role each one plays in the overall system.",
+      "answer_key": "The five major components are: (1) The Central Processing Unit (CPU) \u2014 the part of the computer that actually runs programs by executing machine language instructions. (2) Main Memory (RAM) \u2014 the computer's volatile work area where programs and their data are stored temporarily while running. (3) Secondary Storage Devices \u2014 non-volatile storage such as hard drives, solid-state drives, and USB drives that hold data for long periods even without power. (4) Input Devices \u2014 components like keyboards, mice, and scanners that collect data from people or other devices and send it to the computer. (5) Output Devices \u2014 components like video displays and printers that format and present data produced by the computer to people or other devices.",
+      "hints": {
+        "conceptual": "Think about the complete lifecycle of data: it must be entered, stored temporarily, processed, stored permanently, and presented as results.",
+        "structural": "The five categories relate to processing, temporary storage, permanent storage, data collection, and data presentation.",
+        "specific": "CPU handles processing, RAM handles temporary storage, disk drives handle permanent storage, keyboards are for input, and monitors are for output."
+      }
+    },
+    {
+      "id": "Q8",
+      "topic": "Keywords, operators, and syntax",
+      "question_text": "Every high-level programming language, including Python, is built around three fundamental elements: keywords, operators, and syntax. Define each of these three elements and explain what happens if a programmer violates the syntax rules when writing a Python program.",
+      "answer_key": "Keywords (also called reserved words) are the predefined words that make up a programming language; each has a specific meaning and cannot be used for any other purpose. Operators are symbols that perform various operations on data, such as the + sign for addition. Syntax is the set of rules that dictate how keywords, operators, punctuation, and other programming elements must be arranged in a program. If a programmer violates the syntax rules in Python, the interpreter will display an error message and stop executing the program. Unlike human language listeners, the Python interpreter cannot guess what the programmer meant \u2014 even a single syntax error (such as a misspelled keyword or missing punctuation) prevents the program from running.",
+      "hints": {
+        "conceptual": "Think of keywords as the vocabulary of the language, operators as the action symbols, and syntax as the grammar rules.",
+        "structural": "Keywords have fixed meanings, operators perform data manipulations, and syntax governs how everything is arranged in valid statements.",
+        "specific": "A syntax error \u2014 like misspelling 'print' as 'prnt' \u2014 causes the Python interpreter to halt and display an error message."
+      }
+    },
+    {
+      "id": "Q9",
+      "topic": "System software versus application software",
+      "question_text": "Software is generally divided into two broad categories: system software and application software. Provide a definition of each category, give at least two examples of system software types, and explain why system software is essential even before any application software can run.",
+      "answer_key": "System software consists of the programs that control and manage the basic operations of a computer. Examples include operating systems (such as Windows, macOS, Linux, Android, and iOS), utility programs (such as virus scanners and data backup programs), and software development tools (such as compilers and interpreters). Application software consists of programs that make a computer useful for everyday tasks, such as word processors, web browsers, email programs, and games. System software is essential before application software can run because the operating system controls the computer's hardware, manages connected devices, allows data to be saved and retrieved, and provides the underlying platform on which application software executes. Without system software, the hardware would have no instructions to follow.",
+      "hints": {
+        "conceptual": "One category manages the computer itself; the other category helps users accomplish specific tasks.",
+        "structural": "System software includes three types: operating systems, utility programs, and software development tools. Application software includes everyday user programs.",
+        "specific": "The operating system is the most fundamental system software \u2014 it controls hardware and enables all other programs to run on the computer."
+      }
+    },
+    {
+      "id": "Q10",
+      "topic": "Byte storage capacity and limits",
+      "question_text": "A single byte of memory consists of eight bits. Explain why the largest unsigned (non-negative) integer value that can be stored in a single byte is 255, and describe what a computer must do if it needs to store a number larger than 255.",
+      "answer_key": "A byte has eight bits, and each bit position represents a power of 2. The position values from right to left are 1, 2, 4, 8, 16, 32, 64, and 128. The largest value occurs when all eight bits are set to 1 (turned on), giving: 1 + 2 + 4 + 8 + 16 + 32 + 64 + 128 = 255. No combination of eight bits can produce a value greater than 255 because there are no higher position values available within a single byte. To store a number larger than 255, the computer must use more than one byte. For example, combining two bytes provides 16 bits, with position values extending up to 2^15 (32,768), allowing a maximum value of 65,535. More bytes can be combined as needed for even larger numbers.",
+      "hints": {
+        "conceptual": "The maximum value is constrained by the number of bits available and the powers of 2 each bit position represents.",
+        "structural": "Add all position values for 8 bits when every bit is turned on: 2^0 + 2^1 + 2^2 + ... + 2^7.",
+        "specific": "128 + 64 + 32 + 16 + 8 + 4 + 2 + 1 = 255. For larger numbers, two bytes give 16 bits and a maximum of 65,535."
+      }
+    }
+  ],
+  "messages": [],
+  "answers": {
+    "Q1": "178",
+    "Q2": "67",
+    "Q3": "The fundamental difference between a compiler and an interpreter lies in timing and delivery. A compiler translates the entire source code into a standalone machine-code file before execution, while an interpreter translates and executes the code line-by-line in real-time.",
+    "Q4": "55",
+    "Q5": "69",
+    "Q7": "21",
+    "Q6": "12",
+    "Q8": "3434",
+    "Q9": "232",
+    "Q10": "34234r"
+  },
+  "result": {
+    "session_id": "c177a647",
+    "overall_score": 24,
+    "max_score": 200,
+    "question_scores": [
+      {
+        "id": "Q1",
+        "points_earned": 14,
+        "points_possible": 20,
+        "correct": true,
+        "student_answer": "178",
+        "correct_answer": "The decimal value is 178. To calculate this, identify which bit positions contain a 1: the positions with values 128, 32, 16, and 2. Adding these together: 128 + 32 + 16 + 2 = 178. Bits in the 64, 8, 4, and 1 positions are 0 and contribute nothing to the total.",
+        "feedback": "The final numerical answer of 178 is correct. However, you did not show any reasoning or method (e.g., identifying which bit positions are 1 and summing 128 + 32 + 16 + 2 = 178). Always show your work to demonstrate understanding and earn full marks."
+      },
+      {
+        "id": "Q2",
+        "points_earned": 0,
+        "points_possible": 20,
+        "correct": false,
+        "student_answer": "67",
+        "correct_answer": "The process is called the fetch-decode-execute cycle. Step 1 (Fetch): The CPU reads the next instruction from main memory. Step 2 (Decode): The CPU analyzes the binary instruction to determine which operation it should perform. Step 3 (Execute): The CPU carries out the operation specified by the instruction. This cycle must repeat for every instruction because each machine language instruction performs only one basic operation, so a meaningful task requires the CPU to process many instructions sequentially.",
+        "feedback": "Your answer of '67' is irrelevant to the question. The correct answer is the fetch-decode-execute cycle: (1) Fetch \u2014 the CPU reads the next instruction from memory; (2) Decode \u2014 the CPU determines what operation to perform; (3) Execute \u2014 the CPU carries out the operation. It repeats because each instruction performs only one basic operation."
+      },
+      {
+        "id": "Q3",
+        "points_earned": 10,
+        "points_possible": 20,
+        "correct": false,
+        "student_answer": "The fundamental difference between a compiler and an interpreter lies in timing and delivery. A compiler translates the entire source code into a standalone machine-code file before execution, while an interpreter translates and executes the code line-by-line in real-time.",
+        "correct_answer": "A compiler translates an entire high-level language program into a separate, complete machine language program before any execution occurs. The resulting machine language program can then be executed independently at any time without the compiler. An interpreter, by contrast, translates and executes a program one instruction at a time \u2014 it reads each high-level instruction, converts it to machine language, and immediately executes it before moving to the next instruction. Python uses an interpreter. Unlike compilation, interpretation does not typically produce a separate standalone machine language program.",
+        "feedback": "Your explanation of the core difference between a compiler and an interpreter is solid and accurate. However, the question explicitly asked which of the two Python uses (answer: an interpreter) and how Python's translation process differs from the other approach. These two parts of the question were left unanswered, costing you significant points."
+      },
+      {
+        "id": "Q4",
+        "points_earned": 0,
+        "points_possible": 20,
+        "correct": false,
+        "student_answer": "55",
+        "correct_answer": "The statement is incorrect because RAM is volatile memory, meaning its contents are erased when the computer is turned off. Secondary storage (such as a hard drive or solid-state drive) is non-volatile and retains data even without power. RAM serves as the computer's temporary work area where programs and their data are held while actively running. Secondary storage is used for long-term preservation of programs, documents, and other data. During program execution, a program stored on secondary storage must first be copied into RAM before the CPU can execute it. Without secondary storage, all programs and data would be permanently lost every time the computer is shut down.",
+        "feedback": "Your answer of '55' is irrelevant. You needed to explain the differences between RAM (volatile, temporary work area) and secondary storage (non-volatile, long-term storage), and why both are necessary. Without secondary storage, all data is lost when the computer powers off."
+      },
+      {
+        "id": "Q5",
+        "points_earned": 0,
+        "points_possible": 20,
+        "correct": false,
+        "student_answer": "69",
+        "correct_answer": "When you type an uppercase 'A', the computer stores the numeric code 65 in memory as a binary number (01000001). The encoding scheme that defines this mapping is ASCII (American Standard Code for Information Interchange), which assigns numeric codes to 128 characters including English letters, digits, and punctuation. Unicode was developed because ASCII is limited to only 128 characters and can represent only English characters. Unicode is a much more extensive encoding scheme that is compatible with ASCII but can also represent characters from many of the world's languages, making it suitable for international use.",
+        "feedback": "Your answer of '69' is irrelevant to the question and also factually incorrect \u2014 the ASCII code for uppercase 'A' is 65, not 69. You needed to explain that a numeric code (65) is stored, name the ASCII encoding scheme, and describe why Unicode was developed to support characters from many languages beyond ASCII's 128-character limit."
+      },
+      {
+        "id": "Q6",
+        "points_earned": 0,
+        "points_possible": 20,
+        "correct": false,
+        "student_answer": "12",
+        "correct_answer": "The two modes are interactive mode and script mode. In interactive mode, the interpreter displays a >>> prompt and waits for the user to type individual Python statements at the keyboard; each statement is executed immediately and its result is displayed. This mode is useful for testing small pieces of code, experimenting with new language features, and getting immediate feedback. In script mode, the interpreter reads and executes all the statements contained in a saved file (a Python program or script). This mode is used when a programmer wants to save a complete program for repeated execution. Python program files are saved with the .py file extension.",
+        "feedback": "Your answer of '12' is irrelevant. The two modes are interactive mode (>>> prompt, immediate execution of typed statements, good for testing) and script mode (executes statements saved in a .py file, used for complete programs)."
+      },
+      {
+        "id": "Q7",
+        "points_earned": 0,
+        "points_possible": 20,
+        "correct": false,
+        "student_answer": "21",
+        "correct_answer": "The five major components are: (1) The Central Processing Unit (CPU) \u2014 the part of the computer that actually runs programs by executing machine language instructions. (2) Main Memory (RAM) \u2014 the computer's volatile work area where programs and their data are stored temporarily while running. (3) Secondary Storage Devices \u2014 non-volatile storage such as hard drives, solid-state drives, and USB drives that hold data for long periods even without power. (4) Input Devices \u2014 components like keyboards, mice, and scanners that collect data from people or other devices and send it to the computer. (5) Output Devices \u2014 components like video displays and printers that format and present data produced by the computer to people or other devices.",
+        "feedback": "Your answer of '21' is irrelevant. The five components are: (1) CPU, (2) Main Memory (RAM), (3) Secondary Storage Devices, (4) Input Devices, and (5) Output Devices. Each plays a distinct role in the overall system."
+      },
+      {
+        "id": "Q8",
+        "points_earned": 0,
+        "points_possible": 20,
+        "correct": false,
+        "student_answer": "3434",
+        "correct_answer": "Keywords (also called reserved words) are the predefined words that make up a programming language; each has a specific meaning and cannot be used for any other purpose. Operators are symbols that perform various operations on data, such as the + sign for addition. Syntax is the set of rules that dictate how keywords, operators, punctuation, and other programming elements must be arranged in a program. If a programmer violates the syntax rules in Python, the interpreter will display an error message and stop executing the program. Unlike human language listeners, the Python interpreter cannot guess what the programmer meant \u2014 even a single syntax error (such as a misspelled keyword or missing punctuation) prevents the program from running.",
+        "feedback": "Your answer of '3434' is irrelevant. Keywords are reserved words with predefined meanings, operators are symbols that perform operations on data (e.g., +), and syntax is the set of rules governing how code must be structured. Violating syntax rules causes the interpreter to display an error and halt execution."
+      },
+      {
+        "id": "Q9",
+        "points_earned": 0,
+        "points_possible": 20,
+        "correct": false,
+        "student_answer": "232",
+        "correct_answer": "System software consists of the programs that control and manage the basic operations of a computer. Examples include operating systems (such as Windows, macOS, Linux, Android, and iOS), utility programs (such as virus scanners and data backup programs), and software development tools (such as compilers and interpreters). Application software consists of programs that make a computer useful for everyday tasks, such as word processors, web browsers, email programs, and games. System software is essential before application software can run because the operating system controls the computer's hardware, manages connected devices, allows data to be saved and retrieved, and provides the underlying platform on which application software executes. Without system software, the hardware would have no instructions to follow.",
+        "feedback": "Your answer of '232' is irrelevant. System software (e.g., operating systems, utilities, dev tools) manages basic computer operations, while application software (e.g., word processors, browsers) makes the computer useful for everyday tasks. System software is essential because it provides the platform on which all applications run."
+      },
+      {
+        "id": "Q10",
+        "points_earned": 0,
+        "points_possible": 20,
+        "correct": false,
+        "student_answer": "34234r",
+        "correct_answer": "A byte has eight bits, and each bit position represents a power of 2. The position values from right to left are 1, 2, 4, 8, 16, 32, 64, and 128. The largest value occurs when all eight bits are set to 1 (turned on), giving: 1 + 2 + 4 + 8 + 16 + 32 + 64 + 128 = 255. No combination of eight bits can produce a value greater than 255 because there are no higher position values available within a single byte. To store a number larger than 255, the computer must use more than one byte. For example, combining two bytes provides 16 bits, with position values extending up to 2^15 (32,768), allowing a maximum value of 65,535. More bytes can be combined as needed for even larger numbers.",
+        "feedback": "Your answer of '34234r' is irrelevant. A byte's eight bits have position values 1 through 128 (powers of 2). When all bits are 1, the maximum value is 1+2+4+8+16+32+64+128 = 255. To store larger numbers, the computer must use multiple bytes to gain additional bit positions."
+      }
+    ],
+    "summary_feedback": "You scored 24 out of 200. Only Q1 (binary conversion) received credit for a correct numerical answer, and Q3 earned partial credit for a decent but incomplete explanation. The vast majority of your answers were single numbers or nonsensical entries that did not address the questions at all. Please revisit all topics thoroughly \u2014 focus on understanding computer hardware components, the fetch-decode-execute cycle, memory types, encoding schemes, and Python fundamentals \u2014 and practice writing complete, explanatory answers rather than submitting placeholder values."
+  }
+}
